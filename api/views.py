@@ -1,12 +1,33 @@
 from django.shortcuts import render
 from .serializers import RatingSerializer, MealSerializer
-from rest_framework import viewsets
+from rest_framework import viewsets 
 from .models import Meal, Rating
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
-import json
+from rest_framework.views import APIView
+from django.contrib.auth.models import User
+from rest_framework.permissions import AllowAny
+
 # Create your views here.
+
+
+class UserView(APIView):
+    permission_classes = (AllowAny,)
+    def post(self, request):
+        username = request.data['username']
+        password = request.data['password']
+        try:
+            User.objects.create_user(username=username, password=password)
+            Json = {'details': 'created successfully'}
+            status_code = status.HTTP_201_CREATED
+        except Exception as e:
+            Json =  {'details': f'failed creation {e}'}
+            status_code = status.HTTP_400_BAD_REQUEST
+        
+        return Response(Json, status=status_code)
+
+
 class MealView(viewsets.ModelViewSet):
     queryset = Meal.objects.all()
     serializer_class = MealSerializer
@@ -38,3 +59,5 @@ class MealView(viewsets.ModelViewSet):
 class RatingView(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
+
+

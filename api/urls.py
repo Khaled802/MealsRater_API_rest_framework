@@ -6,12 +6,14 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from rest_framework.authtoken.models import Token
+from .views import UserView
 
 router = DefaultRouter()
 router.register('meal', views.MealView)
 router.register('rating', views.RatingView)
 
 urlpatterns = [
+    path('register/', UserView.as_view()),
     path('', include(router.urls)),
     path('auth-token/', obtain_auth_token),
    
